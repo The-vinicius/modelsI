@@ -15,9 +15,22 @@ Future<void> fetchAllModel() async {
   modelLoadingState.setValue(false);
 }
 
+Future<void> fetchByCategory(String category, count) async {
+  modelLoadingState.setValue(true);
+  final int start = count <= 1 ? 0 : count;
+  final repository = injector.get<ModelRepository>();
+  final models =
+      await repository.getModelsByCategory(category, start, count + 10);
+  final modelsi = modelsState.value + models;
+  modelsState.setValue(modelsi);
+  modelLoadingState.setValue(false);
+}
+
 Future<void> putModel(ModelEntity model) async {
+  modelLoadingState.setValue(true);
   final repository = injector.get<ModelRepository>();
   await repository.putModels(model);
+  modelLoadingState.setValue(false);
 }
 
 Future<void> deleteModel(ModelEntity model) async {

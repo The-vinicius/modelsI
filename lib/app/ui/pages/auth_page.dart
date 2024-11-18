@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:models/routes.g.dart';
+import 'package:routefly/routefly.dart';
 import 'package:supabase_auth_ui/supabase_auth_ui.dart';
 
 class AuthPage extends StatelessWidget {
@@ -24,7 +26,8 @@ class AuthPage extends StatelessWidget {
               SupaMagicAuth(
                 redirectUrl:
                     kIsWeb ? null : "io.supabase.modelsi://login-callback/",
-                onSuccess: (session) => Navigator.pushNamed(context, '/home'),
+                onSuccess: (session) =>
+                    Routefly.navigate(routePaths.ui.pages.home),
               ),
             ],
           ),

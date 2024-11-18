@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:models/app/injector.dart';
-import 'package:models/app/ui/pages/auth_page.dart';
-import 'package:models/app/ui/pages/home_page.dart';
-import 'package:models/app/ui/pages/model_form_page.dart';
-import 'package:models/app/ui/pages/splash_page.dart';
+import 'package:models/routes.g.dart';
+import 'package:routefly/routefly.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
@@ -25,18 +23,13 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Models',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      routes: {
-        '/': (context) => const SplashPage(),
-        '/auth': (context) => const AuthPage(),
-        '/home': (context) => const HomePage(),
-        '/upload': (context) => const ModelFormPage(),
-      },
-    );
+    return MaterialApp.router(
+        title: 'Models',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        routerConfig: Routefly.routerConfig(
+            routes: routes, initialPath: routePaths.ui.pages.splash));
   }
 }

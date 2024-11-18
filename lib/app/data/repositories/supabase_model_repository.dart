@@ -16,7 +16,7 @@ class SupabaseModelRepository implements ModelRepository {
 
   @override
   Future<List<ModelEntity>> getModels() async {
-    final modelsi = await supabase.from('modelsi').select().range(1, 10);
+    final modelsi = await supabase.from('modelsi').select().range(0, 10);
     return modelsi.map((e) => ModelAdapter.fromModel(e)).toList();
   }
 
@@ -28,5 +28,16 @@ class SupabaseModelRepository implements ModelRepository {
     await supabase.from('modelsi').insert(ModelAdapter.toMap(model));
 
     return model;
+  }
+
+  @override
+  Future<List<ModelEntity>> getModelsByCategory(
+      String category, int start, int end) async {
+    final modelsi = await supabase
+        .from('modelsi')
+        .select()
+        .eq('category', category)
+        .range(start, end);
+    return modelsi.map((e) => ModelAdapter.fromModel(e)).toList();
   }
 }

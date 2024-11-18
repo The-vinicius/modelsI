@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:models/app/interactor/actions/model_actions.dart';
 import 'package:models/app/interactor/entities/model_entity.dart';
+import 'package:models/app/interactor/states/model_states.dart';
 
 class ModelFormPage extends StatefulWidget {
   const ModelFormPage({super.key});
@@ -20,6 +21,7 @@ class _ModelFormPageState extends State<ModelFormPage> {
       return _showM();
     }
     await putModel(modeli);
+    modeli.clean();
   }
 
   void _showM() {
@@ -46,123 +48,141 @@ class _ModelFormPageState extends State<ModelFormPage> {
               'Save',
               style: TextStyle(fontSize: 18),
             )),
-        body: Card(
-          color: Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Form(
-              key: formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TextFormField(
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    onChanged: (name) {
-                      modeli.name = name;
-                    },
-                    validator: (name) {
-                      name = name ?? '';
-                      if (name.isEmpty) {
-                        return "required";
-                      }
-                      return null;
-                    },
-                    decoration: const InputDecoration(
-                        labelText: 'Name', hintText: 'name'),
-                  ),
-                  Center(
-                    child: InkWell(
-                      onTap: () async {
-                        final image = await selectImage();
-                        if (image != null) {
-                          modeli.updateImage(image);
-                        }
-                      },
-                      child: ListenableBuilder(
-                          listenable: modeli,
-                          builder: (context, widget) {
-                            return Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: const BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(10))),
-                                height: MediaQuery.of(context).size.height * .4,
-                                width: MediaQuery.of(context).size.width * .8,
-                                child: modeli.image != null
-                                    ? ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(20.0),
-                                        child: Image.file(
-                                          modeli.image!,
-                                          fit: BoxFit.fitHeight,
-                                        ),
-                                      )
-                                    : const Center(
-                                        child: Text('Select Image'),
-                                      ));
-                          }),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    onChanged: (instagram) {
-                      modeli.instagram = instagram;
-                    },
-                    validator: (instagram) {
-                      instagram = instagram ?? '';
-                      if (instagram.isEmpty) {
-                        return "required";
-                      }
-                      return null;
-                    },
-                    decoration: const InputDecoration(labelText: 'Instagram'),
-                  ),
-                  const SizedBox(height: 20),
-                  const Text('Category'),
-                  FormField<String>(
-                    validator: (value) {
-                      if (modeli.category.isEmpty) {
-                        return 'select category';
-                      }
-                      return null;
-                    },
-                    builder: (FormFieldState<String> state) {
-                      return DropdownButton<String>(
-                        hint: const Text('select category'),
-                        value: modeli.category,
-                        items: const [
-                          DropdownMenuItem(
-                            value: 'atriz',
-                            child: Text('Atriz'),
+        body: ListenableBuilder(
+            listenable: modelLoadingState,
+            builder: (context, widget) {
+              return modelLoadingState.value
+                  ? const Center(child: CircularProgressIndicator())
+                  : Card(
+                      color: Colors.white,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Form(
+                          key: formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TextFormField(
+                                autovalidateMode:
+                                    AutovalidateMode.onUserInteraction,
+                                onChanged: (name) {
+                                  modeli.name = name;
+                                },
+                                initialValue: modeli.name,
+                                validator: (name) {
+                                  name = name ?? '';
+                                  if (name.isEmpty) {
+                                    return "required";
+                                  }
+                                  return null;
+                                },
+                                decoration: const InputDecoration(
+                                    labelText: 'Name', hintText: 'name'),
+                              ),
+                              Center(
+                                child: InkWell(
+                                  onTap: () async {
+                                    final image = await selectImage();
+                                    if (image != null) {
+                                      modeli.updateImage(image);
+                                    }
+                                  },
+                                  child: ListenableBuilder(
+                                      listenable: modeli,
+                                      builder: (context, widget) {
+                                        return Container(
+                                            padding: const EdgeInsets.all(10),
+                                            decoration: const BoxDecoration(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(10))),
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                .4,
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                .8,
+                                            child: modeli.image != null
+                                                ? ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20.0),
+                                                    child: Image.file(
+                                                      modeli.image!,
+                                                      fit: BoxFit.fitHeight,
+                                                    ),
+                                                  )
+                                                : const Center(
+                                                    child: Text('Select Image'),
+                                                  ));
+                                      }),
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              TextFormField(
+                                autovalidateMode:
+                                    AutovalidateMode.onUserInteraction,
+                                initialValue: modeli.instagram,
+                                onChanged: (instagram) {
+                                  modeli.instagram = instagram;
+                                },
+                                validator: (instagram) {
+                                  instagram = instagram ?? '';
+                                  if (instagram.isEmpty) {
+                                    return "required";
+                                  }
+                                  return null;
+                                },
+                                decoration: const InputDecoration(
+                                    labelText: 'Instagram'),
+                              ),
+                              const SizedBox(height: 20),
+                              const Text('Category'),
+                              FormField<String>(
+                                validator: (value) {
+                                  if (modeli.category.isEmpty) {
+                                    return 'select category';
+                                  }
+                                  return null;
+                                },
+                                builder: (FormFieldState<String> state) {
+                                  return DropdownButton<String>(
+                                    hint: const Text('select category'),
+                                    value: modeli.category,
+                                    items: const [
+                                      DropdownMenuItem(
+                                        value: 'atriz',
+                                        child: Text('Atriz'),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'youtube',
+                                        child: Text('youtube'),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'streaming',
+                                        child: Text('streaming'),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'singer',
+                                        child: Text('singer'),
+                                      ),
+                                    ],
+                                    onChanged: (String? category) {
+                                      final newCategory = category ?? 'atriz';
+                                      setState(() {
+                                        modeli.category = newCategory;
+                                      });
+                                    },
+                                  );
+                                },
+                              ),
+                            ],
                           ),
-                          DropdownMenuItem(
-                            value: 'youtube',
-                            child: Text('youtube'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'streaming',
-                            child: Text('streaming'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'singer',
-                            child: Text('singer'),
-                          ),
-                        ],
-                        onChanged: (String? category) {
-                          final newCategory = category ?? 'atriz';
-                          setState(() {
-                            modeli.category = newCategory;
-                          });
-                        },
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+                        ),
+                      ),
+                    );
+            }),
       ),
     );
   }

@@ -42,6 +42,14 @@ class ModelEntity extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clean() {
+    name = '';
+    instagram = '';
+    image = null;
+
+    notifyListeners();
+  }
+
   static ModelEntity empyt() {
     return ModelEntity(
         id: 0, urlImage: '', name: '', instagram: '', category: 'atriz');
